@@ -1,11 +1,11 @@
 #include <complex.h>
+#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <dirent.h>
 
 #define RGB_COLOR(r, g, b) "\033[38;2;" #r ";" #g ";" #b "m"
 #define BOLD "\033[1m"
@@ -18,8 +18,9 @@ const char *GREEN = RGB_COLOR(0, 255, 0);
 const char *BLUE = RGB_COLOR(0, 0, 255);
 const char *YELLOW = RGB_COLOR(255, 255, 0);
 
-void print_colored_text(const char *text, const char *color, const char *style) {
-    printf("%s%s%s%s", color, style, text, RESET);
+void print_colored_text(const char *text, const char *color,
+                        const char *style) {
+  printf("%s%s%s%s", color, style, text, RESET);
 }
 
 /*
@@ -74,10 +75,18 @@ int exit_(char **args) { return 0; }
 int ls(char **args) {
   DIR *d;
   struct dirent *dir;
+  char *path;
 
-  
+  //~ If the argument exists 'ls' to that path else 'ls' the current path
+  //TODO If multiple arguments are given, multiple 'ls' results are given for each argument
+  if (args[1] != NULL) {
+    path = args[1];
+  } else {
+    path = ".";
+  }
 
-  d = opendir(".");
+  d = opendir(path);
+
   if (d) {
     while ((dir = readdir(d)) != NULL) {
       printf("%s\n", dir->d_name);
@@ -195,7 +204,8 @@ int execute(char **args) {
 
   // If we reach here, no built-in command matched.
   print_colored_text("ash: Command Not Found\n", RED, BOLD);
-  return 1; // You might want to call launch(args) here if you have external command execution implemented.
+  return 1; // You might want to call launch(args) here if you have external
+            // command execution implemented.
 }
 
 void loop() {
