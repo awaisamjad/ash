@@ -109,7 +109,25 @@ int ls(char **args) {
   return 1;
 }
 
-int touch(char **args) {}
+int touch(char **args) {
+  FILE *file_ptr;
+
+  if (args[1] != NULL) {
+    file_ptr = fopen(args[1], "w");
+    if (file_ptr == NULL) {
+      perror("Error creating file");
+      return 1;
+    }
+    fclose(file_ptr);
+  } else {
+    fprintf(stderr, "Error. No file name entered\n");
+    return 1;
+  }
+  
+  return 1;
+}
+
+
 int mv(char **args) {}
 int cp(char **args) {}
 int rm(char **args) {}
