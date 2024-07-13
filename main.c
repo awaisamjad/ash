@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -23,6 +24,11 @@ void print_colored_text(const char *text, const char *color,
   printf("%s%s%s%s", color, style, text, RESET);
 }
 
+void println_colored_text(const char *text, const char *color,
+                          const char *style) {
+  printf("%s%s%s%s\n", color, style, text, RESET);
+}
+
 /*
   Function Declarations for builtin shell commands:
  */
@@ -30,13 +36,21 @@ int cd(char **args);
 int help(char **args);
 int exit_(char **args);
 int ls(char **args);
+int touch(char **args);
+int mv(char **args);
+int cp(char **args);
+int rm(char **args);
+int cat(char **args);
+int man(char **args);
 
 /*
   List of builtin commands, followed by their corresponding functions.
  */
-char *builtin_commands[] = {"cd", "help", "exit_", "ls"};
+char *builtin_commands[] = {"cd", "help", "exit_", "ls",  "touch",
+                            "mv", "cp",   "rm",    "cat", "man"};
 
-int (*builtin_functions[])(char **) = {cd, help, exit_, ls};
+int (*builtin_functions[])(char **) = {cd, help, exit_, ls,  touch,
+                                       mv, cp,   rm,    cat, man};
 
 int number_of_builtin_commands() {
   return sizeof(builtin_commands) / sizeof(char *);
@@ -56,29 +70,18 @@ int cd(char **args) {
   return 1;
 }
 
-int help(char **args) {
-  int i;
-  printf("Awais Amjads Shell (ash)\n");
-  printf("Type program names and arguments, and hit enter.\n");
-  printf("The following are built in:\n");
-
-  for (i = 0; i < number_of_builtin_commands(); i++) {
-    printf("  %s\n", builtin_commands[i]);
-  }
-
-  printf("Use the man command for information on other programs.\n");
-  return 1;
-}
-
 int exit_(char **args) { return 0; }
 
 int ls(char **args) {
   DIR *d;
+  struct stat statbuf;
   struct dirent *dir;
   char *path;
+  char fullPath[1024];
 
   //~ If the argument exists 'ls' to that path else 'ls' the current path
-  //TODO If multiple arguments are given, multiple 'ls' results are given for each argument
+  // TODO If multiple arguments are given, multiple 'ls' results are given for
+  // each argument
   if (args[1] != NULL) {
     path = args[1];
   } else {
@@ -89,13 +92,42 @@ int ls(char **args) {
 
   if (d) {
     while ((dir = readdir(d)) != NULL) {
-      printf("%s\n", dir->d_name);
+      snprintf(fullPath, sizeof(fullPath), "%s/%s", path, dir->d_name);
+      if (stat(fullPath, &statbuf) == 0) {
+
+        // Check if it's a directory or a file
+        char type = S_ISDIR(statbuf.st_mode) ? 'D' : 'F';
+        if (type == 'D') {
+          println_colored_text(dir->d_name, BLUE, BOLD);
+        } else {
+          println_colored_text(dir->d_name, YELLOW, "");
+        }
+      }
     }
     closedir(d);
   }
   return 1;
 }
 
+int touch(char **args) {}
+int mv(char **args) {}
+int cp(char **args) {}
+int rm(char **args) {}
+int cat(char **args) {}
+int man(char **args) {}
+int help(char **args) {
+  int i;
+  printf("Awais Amjads Shell (ash)\n");
+  printf("Type program names and arguments, and hit enter.\n");
+  printf("The following are built in:\n");
+
+  for (i = 0; i < number_of_builtin_commands(); i++) {
+    println_colored_text(builtin_commands[i], GREEN, UNDERLINE);
+  }
+
+  printf("Use the man command for information on other programs.\n");
+  return 1;
+}
 /*
 Main Functions
 */
