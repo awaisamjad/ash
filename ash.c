@@ -19,6 +19,9 @@ const char *GREEN = RGB_COLOR(0, 255, 0);
 const char *BLUE = RGB_COLOR(0, 0, 255);
 const char *YELLOW = RGB_COLOR(255, 255, 0);
 
+/*
+Utility Functions
+*/
 void print_colored_text(const char *text, const char *color,
                         const char *style) {
   printf("%s%s%s%s", color, style, text, RESET);
@@ -29,6 +32,13 @@ void println_colored_text(const char *text, const char *color,
   printf("%s%s%s%s\n", color, style, text, RESET);
 }
 
+int count_args(char **args) {
+  int count = 0;
+  while (args[count] != NULL) {
+    count++;
+  }
+  return count;
+}
 /*
   Function Declarations for builtin shell commands:
  */
@@ -37,6 +47,7 @@ int help(char **args);
 int exit_(char **args);
 int ls(char **args);
 int touch(char **args);
+int echo(char **args);
 int mv(char **args);
 int cp(char **args);
 int rm(char **args);
@@ -46,11 +57,11 @@ int man(char **args);
 /*
   List of builtin commands, followed by their corresponding functions.
  */
-char *builtin_commands[] = {"cd", "help", "exit_", "ls",  "touch",
-                            "mv", "cp",   "rm",    "cat", "man"};
+char *builtin_commands[] = {"cd", "help", "exit_", "ls",  "touch", "mv",
+                            "cp", "rm",   "cat",   "man", "echo"};
 
-int (*builtin_functions[])(char **) = {cd, help, exit_, ls,  touch,
-                                       mv, cp,   rm,    cat, man};
+int (*builtin_functions[])(char **) = {cd, help, exit_, ls,  touch, mv,
+                                       cp, rm,   cat,   man, echo};
 
 int number_of_builtin_commands() {
   return sizeof(builtin_commands) / sizeof(char *);
@@ -111,23 +122,60 @@ int ls(char **args) {
 
 int touch(char **args) {
   FILE *file_ptr;
+  int number_of_args = count_args(args);
 
   if (args[1] != NULL) {
-    file_ptr = fopen(args[1], "w");
-    if (file_ptr == NULL) {
-      perror("Error creating file");
-      return 1;
+    for (int i = 1; i < number_of_args; i++) //~ Handles all arguments
+    {
+      //~ Check if file exists
+      if (access(args[i], F_OK) != -1) {
+        printf("File '%s' already exists, cannot create a new one.\n", args[i]);
+        return 1;
+      } else {
+        file_ptr = fopen(args[i], "w");
+      }
+      if (file_ptr == NULL) {
+        perror("Error creating file");
+        return 1;
+      }
+      fclose(file_ptr);
     }
-    fclose(file_ptr);
   } else {
-    fprintf(stderr, "Error. No file name entered\n");
+    fprintf(stderr, "Error. No file name entered\nUsage: touch <filename>\n");
     return 1;
   }
-  
+
   return 1;
 }
+int echo(char **args) {
+  FILE *file_ptr;
 
-
+  //~ Check if only 3 arguments
+  int number_of_arguments = count_args(args);
+  if (number_of_arguments < 3) {
+    fprintf(stderr,
+            "Error. Too few arguments\nUsage: echo \"Content\" filename\n");
+  } else if (number_of_arguments > 3) {
+    fprintf(stderr,
+            "Error. Too many arguments\nUsage: echo \"Content\" filename\n");
+  } else {
+    char *content = args[1];
+    char *filename = args[2];
+    if (content != NULL && filename != NULL) {
+      file_ptr = fopen(filename, "w");
+      if (file_ptr == NULL) {
+        perror("Error creating file");
+        return 1;
+      }
+      fprintf(file_ptr, "%s", content);
+      fclose(file_ptr);
+    } 
+    else {
+      fprintf(stderr, "Error. No content or file name entered\nUsage: echo \"Content\" filename\n");
+      return 1;
+    }
+  }
+}
 int mv(char **args) {}
 int cp(char **args) {}
 int rm(char **args) {}
