@@ -14,10 +14,12 @@
 #define RESET "\033[0m"
 
 // Example predefined colors
-const char *RED = RGB_COLOR(255, 0, 0);
-const char *GREEN = RGB_COLOR(0, 255, 0);
-const char *BLUE = RGB_COLOR(0, 0, 255);
-const char *YELLOW = RGB_COLOR(255, 255, 0);
+//~ Uses Catpuccin Latter colours
+const char *RED = RGB_COLOR(210, 15, 57);
+const char *GREEN = RGB_COLOR(64, 160, 43);
+const char *BLUE = RGB_COLOR(30, 102, 245);
+const char *YELLOW = RGB_COLOR(223, 142, 29);
+const char *PINK = RGB_COLOR(234, 118, 203);
 
 /*
 Utility Functions
@@ -53,15 +55,15 @@ int cp(char **args);
 int rm(char **args);
 int cat(char **args);
 int man(char **args);
-
+int md(char **args);
 /*
   List of builtin commands, followed by their corresponding functions.
  */
 char *builtin_commands[] = {"cd", "help", "exit_", "ls",  "touch", "mv",
-                            "cp", "rm",   "cat",   "man", "echo"};
+                            "cp", "rm",   "cat",   "man", "echo", "md"};
 
 int (*builtin_functions[])(char **) = {cd, help, exit_, ls,  touch, mv,
-                                       cp, rm,   cat,   man, echo};
+                                       cp, rm,   cat,   man, echo, md,};
 
 int number_of_builtin_commands() {
   return sizeof(builtin_commands) / sizeof(char *);
@@ -181,6 +183,11 @@ int cp(char **args) {}
 int rm(char **args) {}
 int cat(char **args) {}
 int man(char **args) {}
+int md(char **args) {
+  char *filepath = args[1];
+  mkdir(filepath, 0777);
+  return 1;
+}
 int help(char **args) {
   int i;
   printf("Awais Amjads Shell (ash)\n");
@@ -321,7 +328,7 @@ void loop() {
     } else {
       perror("Error getting current working directory");
     }
-    printf("$ ");
+    print_colored_text(" => ", PINK, "");
 
     line = read_line();
     arguments = split_line(line);
