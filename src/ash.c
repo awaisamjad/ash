@@ -245,6 +245,7 @@ int mkd(char** args)
             perror("ash: mkd - Error getting current working directory");
         }
         
+        //~ Go over all the sub-directories (tokens) and cd into them and make the dirs
         while (token != NULL) {
             mkdir(token, 0777);
             chdir(token);
@@ -273,6 +274,7 @@ int help(char** args)
     printf("Use the man command for information on other programs.\n");
     return 1;
 }
+
 /*
 Main Functions
 */
