@@ -8,30 +8,39 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define RGB_COLOR(r, g, b) "\033[38;2;" #r ";" #g ";" #b "m"
+#define RGB_COLOR(r, g, b) "\033[38;2;" #r ";" #g ";" #b "m" // Text Colour
+#define BG_RGB_COLOR(r, g, b) "\033[48;2;" #r ";" #g ";" #b "m" // Background Colour
 #define BOLD "\033[1m"
 #define UNDERLINE "\033[4m"
 #define RESET "\033[0m"
 
 // Example predefined colors
-//~ Uses Catpuccin Latter colours
+//~ Uses Catpuccin Latte colours
 const char* RED = RGB_COLOR(210, 15, 57);
 const char* GREEN = RGB_COLOR(64, 160, 43);
 const char* BLUE = RGB_COLOR(30, 102, 245);
 const char* YELLOW = RGB_COLOR(223, 142, 29);
 const char* PINK = RGB_COLOR(234, 118, 203);
 
+const char* BG_RED = BG_RGB_COLOR(210, 15, 57);
+const char* BG_GREEN = BG_RGB_COLOR(64, 160, 43);
+const char* BG_BLUE = BG_RGB_COLOR(30, 102, 245);
+const char* BG_YELLOW = BG_RGB_COLOR(223, 142, 29);
+const char* BG_PINK = BG_RGB_COLOR(234, 118, 203);
+
 /*
 Utility Functions
 */
-void print_colored_text(const char* text, const char* color, const char* style)
+void print_colored_text(const char* text, const char* color, const char* bg_colour, const char* style)
 {
-    printf("%s%s%s%s", color, style, text, RESET);
+    printf("%s%s%s%s", color, bg_colour, style, text);
+    printf("%s", RESET);
 }
 
-void println_colored_text(const char* text, const char* color, const char* style)
+void println_colored_text(const char* text, const char* bg_colour, const char* color, const char* style)
 {
-    printf("%s%s%s%s\n", color, style, text, RESET);
+    printf("%s%s%s%s\n", color, bg_colour, style, text);
+    printf("%s", RESET);
 }
 
 int count_args(char** args)
@@ -126,9 +135,9 @@ int ls(char** args)
                 char type = S_ISDIR(statbuf.st_mode) ? 'D' : 'F';
                 if (type == 'D') {
                     //TODO design colour scheme
-                    println_colored_text(dir->d_name, BLUE, BOLD);
+                    println_colored_text(dir->d_name, PINK,BG_BLUE , BOLD);
                 } else {
-                    println_colored_text(dir->d_name, YELLOW, "");
+                    println_colored_text(dir->d_name, YELLOW, BG_GREEN,"");
                 }
             }
         }
@@ -212,10 +221,10 @@ int mkd(char** args)
 {
     int num_of_args = count_args(args);
     if (num_of_args < 2) {
-        fprintf(stderr, "Too few arguments\nUsage: mkd <path>");
+        fprintf(stderr, "Too few arguments\nUsage: mkd <path>\n");
         return 1;
     } else if (num_of_args > 2) {
-        fprintf(stderr, "Too many arguments\nUsage: mkd <path>");
+        fprintf(stderr, "Too many arguments\nUsage: mkd <path>\n");
         return 1;
     } else {
         char* filepath = args[1];
@@ -231,7 +240,7 @@ int help(char** args)
     printf("The following are built in:\n");
 
     for (i = 0; i < number_of_builtin_commands(); i++) {
-        println_colored_text(builtin_commands[i], GREEN, UNDERLINE);
+        println_colored_text(builtin_commands[i], GREEN,"", UNDERLINE);
     }
 
     printf("Use the man command for information on other programs.\n");
@@ -349,7 +358,7 @@ int execute(char** args)
     }
 
     // If we reach here, no built-in command matched.
-    print_colored_text("ash: Command Not Found\n", RED, BOLD);
+    print_colored_text("ash: Command Not Found\n", RED, "", BOLD);
     return 1; // You might want to call launch(args) here if you have
               // external command execution implemented.
 }
@@ -366,11 +375,11 @@ void loop()
         //~ Get the current directory
         if (getcwd(cwd, sizeof(cwd)) != NULL) {
             // printf("%s", cwd);
-            print_colored_text(cwd, GREEN, BOLD);
+            print_colored_text(cwd, GREEN, "", BOLD);
         } else {
             perror("Error getting current working directory");
         }
-        print_colored_text(" => ", PINK, "");
+        print_colored_text(" => ", PINK, "", "");
 
         line = read_line();
         arguments = split_line(line);
