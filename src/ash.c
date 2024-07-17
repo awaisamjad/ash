@@ -134,10 +134,10 @@ int ls(char** args)
                 // Check if it's a directory or a file
                 char type = S_ISDIR(statbuf.st_mode) ? 'D' : 'F';
                 if (type == 'D') {
-                    //TODO design colour scheme
-                    println_colored_text(dir->d_name, PINK,BG_BLUE , BOLD);
+                    // TODO design colour scheme
+                    println_colored_text(dir->d_name, PINK, BG_BLUE, BOLD);
                 } else {
-                    println_colored_text(dir->d_name, YELLOW, BG_GREEN,"");
+                    println_colored_text(dir->d_name, YELLOW, BG_GREEN, "");
                 }
             }
         }
@@ -220,15 +220,42 @@ int man(char** args) { }
 int mkd(char** args)
 {
     int num_of_args = count_args(args);
+
     if (num_of_args < 2) {
         fprintf(stderr, "Too few arguments\nUsage: mkd <path>\n");
         return 1;
     } else if (num_of_args > 2) {
         fprintf(stderr, "Too many arguments\nUsage: mkd <path>\n");
         return 1;
+    }
+
+    char* filepath = args[1];
+    const char delimiter[] = "/";
+    char* token;
+    char cwd[100];
+    int count = 0;
+
+    if (strchr(filepath, '/') == NULL) { // If the forward slash isnt in the file path string just make the directory
+        mkdir(filepath, 0777); // TODO Look more into the mode. 0777 sets full read/write/execute permissions for all users.
+        return 1;
     } else {
-        char* filepath = args[1];
-        mkdir(filepath, 0777);
+        token = strtok(filepath, delimiter);
+
+        if (getcwd(cwd, sizeof(cwd)) == NULL) {
+            perror("ash: mkd - Error getting current working directory");
+        }
+        
+        while (token != NULL) {
+            mkdir(token, 0777);
+            chdir(token);
+            token = strtok(NULL, delimiter);
+            count++;
+        }
+
+        //~ Change back to starting directory
+        if (chdir(cwd) != 0){
+            fprintf(stderr, "ash: mkd - Error changing directory");
+        }
         return 1;
     }
 }
@@ -240,7 +267,7 @@ int help(char** args)
     printf("The following are built in:\n");
 
     for (i = 0; i < number_of_builtin_commands(); i++) {
-        println_colored_text(builtin_commands[i], GREEN,"", UNDERLINE);
+        println_colored_text(builtin_commands[i], GREEN, "", UNDERLINE);
     }
 
     printf("Use the man command for information on other programs.\n");
