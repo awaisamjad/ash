@@ -111,11 +111,13 @@ int echo(char** args)
 
     //~ Check if only 3 arguments
     int number_of_arguments = count_args(args);
-    char* usage = "Usage: echo <Content> filename\n";
-
-    if (are_number_of_args_correct(args, 3, usage)
-        != 0) {
-
+    if (number_of_arguments < 3) {
+        fprintf(stderr, "Error. Too few arguments\nUsage: echo "
+                        "\"Content\" filename\n");
+    } else if (number_of_arguments > 3) {
+        fprintf(stderr, "Error. Too many arguments\nUsage: echo "
+                        "\"Content\" filename\n");
+    } else {
         char* content = args[1];
         char* filename = args[2];
         if (content != NULL && filename != NULL) {
