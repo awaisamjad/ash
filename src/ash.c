@@ -8,49 +8,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define RGB_COLOR(r, g, b) "\033[38;2;" #r ";" #g ";" #b "m" // Text Colour
-#define BG_RGB_COLOR(r, g, b) "\033[48;2;" #r ";" #g ";" #b "m" // Background Colour
-#define BOLD "\033[1m"
-#define UNDERLINE "\033[4m"
-#define RESET "\033[0m"
-
-// Example predefined colors
-//~ Uses Catpuccin Latte colours
-const char* RED = RGB_COLOR(210, 15, 57);
-const char* GREEN = RGB_COLOR(64, 160, 43);
-const char* BLUE = RGB_COLOR(30, 102, 245);
-const char* YELLOW = RGB_COLOR(223, 142, 29);
-const char* PINK = RGB_COLOR(234, 118, 203);
-
-const char* BG_RED = BG_RGB_COLOR(210, 15, 57);
-const char* BG_GREEN = BG_RGB_COLOR(64, 160, 43);
-const char* BG_BLUE = BG_RGB_COLOR(30, 102, 245);
-const char* BG_YELLOW = BG_RGB_COLOR(223, 142, 29);
-const char* BG_PINK = BG_RGB_COLOR(234, 118, 203);
-
-/*
-Utility Functions
-*/
-void print_colored_text(const char* text, const char* color, const char* bg_colour, const char* style)
-{
-    printf("%s%s%s%s", color, bg_colour, style, text);
-    printf("%s", RESET);
-}
-
-void println_colored_text(const char* text, const char* bg_colour, const char* color, const char* style)
-{
-    printf("%s%s%s%s\n", color, bg_colour, style, text);
-    printf("%s", RESET);
-}
-
-int count_args(char** args)
-{
-    int count = 0;
-    while (args[count] != NULL) {
-        count++;
-    }
-    return count;
-}
+#include "utility.h"
+#include "commands.h"
 /*
   Function Declarations for builtin shell commands:
  */
@@ -66,11 +25,13 @@ int rm(char** args);
 int cat(char** args);
 int man(char** args);
 int mkd(char** args);
+int cat(char **args);
+
 /*
   List of builtin commands, followed by their corresponding functions.
  */
 char* builtin_commands[] = { "cd", "help", "exit_", "ls", "touch", "mv",
-    "cp", "rm", "cat", "man", "echo", "mkd" };
+    "cp", "rm", "cat", "man", "echo", "mkd", };
 
 int (*builtin_functions[])(char**) = {
     cd,
@@ -92,174 +53,12 @@ int number_of_builtin_commands() { return sizeof(builtin_commands) / sizeof(char
 /*
   Builtin function implementations.
 */
-int cd(char** args)
-{
-    if (args[1] == NULL) {
-        fprintf(stderr, "ash: expected argument to \"cd\"\n");
-    } else {
-        if (chdir(args[1]) != 0) {
-            perror("ash");
-        }
-    }
-    return 1;
-}
 
-int exit_(char** args) { return 0; }
 
-int ls(char** args)
-{
-    DIR* d;
-    struct stat statbuf;
-    struct dirent* dir;
-    char* path;
-    char fullPath[1024]; // TODO Does this need 1024?
+/*
+Main Functions
+*/
 
-    //~ If the argument exists 'ls' to that path else 'ls' the current
-    // path
-    // TODO If multiple arguments are given, multiple 'ls' results are
-    // given for each argument
-    if (args[1] != NULL) {
-        path = args[1];
-    } else {
-        path = ".";
-    }
-
-    d = opendir(path);
-
-    if (d) {
-        while ((dir = readdir(d)) != NULL) {
-            snprintf(fullPath, sizeof(fullPath), "%s/%s", path, dir->d_name);
-            if (stat(fullPath, &statbuf) == 0) {
-
-                // Check if it's a directory or a file
-                char type = S_ISDIR(statbuf.st_mode) ? 'D' : 'F';
-                if (type == 'D') {
-                    // TODO design colour scheme
-                    println_colored_text(dir->d_name, PINK, BG_BLUE, BOLD);
-                } else {
-                    println_colored_text(dir->d_name, YELLOW, BG_GREEN, "");
-                }
-            }
-        }
-        closedir(d);
-    } else {
-        fprintf(stderr, "Error listing directory contents\n");
-    }
-    return 1;
-}
-// TODO Add way to give path to the file: touch dir1/dir2/test.txt
-int touch(char** args)
-{
-    FILE* file_ptr;
-    int number_of_args = count_args(args);
-
-    if (args[1] != NULL) {
-        for (int i = 1; i < number_of_args; i++) //~ Handles all arguments
-        {
-            //~ Check if file exists
-            if (access(args[i], F_OK) != -1) {
-                printf("File '%s' already exists, "
-                       "cannot create a new one.\n",
-                    args[i]);
-                return 1;
-            } else {
-                file_ptr = fopen(args[i], "w");
-            }
-            if (file_ptr == NULL) {
-                perror("Error creating file");
-                return 1;
-            }
-            fclose(file_ptr);
-        }
-    } else {
-        fprintf(stderr, "Error. No file name entered\nUsage: touch "
-                        "<filename>\n");
-        return 1;
-    }
-
-    return 1;
-}
-// TODO Needs to take more than just 1 word for the content
-int echo(char** args)
-{
-    FILE* file_ptr;
-
-    //~ Check if only 3 arguments
-    int number_of_arguments = count_args(args);
-    if (number_of_arguments < 3) {
-        fprintf(stderr, "Error. Too few arguments\nUsage: echo "
-                        "\"Content\" filename\n");
-    } else if (number_of_arguments > 3) {
-        fprintf(stderr, "Error. Too many arguments\nUsage: echo "
-                        "\"Content\" filename\n");
-    } else {
-        char* content = args[1];
-        char* filename = args[2];
-        if (content != NULL && filename != NULL) {
-            file_ptr = fopen(filename, "w");
-            if (file_ptr == NULL) {
-                perror("Error creating file");
-                return 1;
-            }
-            fprintf(file_ptr, "%s", content);
-            fclose(file_ptr);
-        } else {
-            fprintf(stderr, "Error. No content or file name "
-                            "entered\nUsage: echo "
-                            "\"Content\" filename\n");
-            return 1;
-        }
-    }
-}
-int mv(char** args) { }
-int cp(char** args) { }
-int rm(char** args) { }
-int cat(char** args) { }
-int man(char** args) { }
-// TODO Make better
-int mkd(char** args)
-{
-    int num_of_args = count_args(args);
-
-    if (num_of_args < 2) {
-        fprintf(stderr, "Too few arguments\nUsage: mkd <path>\n");
-        return 1;
-    } else if (num_of_args > 2) {
-        fprintf(stderr, "Too many arguments\nUsage: mkd <path>\n");
-        return 1;
-    }
-
-    char* filepath = args[1];
-    const char delimiter[] = "/";
-    char* token;
-    char cwd[100];
-    int count = 0;
-
-    if (strchr(filepath, '/') == NULL) { // If the forward slash isnt in the file path string just make the directory
-        mkdir(filepath, 0777); // TODO Look more into the mode. 0777 sets full read/write/execute permissions for all users.
-        return 1;
-    } else {
-        token = strtok(filepath, delimiter);
-
-        if (getcwd(cwd, sizeof(cwd)) == NULL) {
-            perror("ash: mkd - Error getting current working directory");
-        }
-        
-        //~ Go over all the sub-directories (tokens) and cd into them and make the dirs
-        while (token != NULL) {
-            mkdir(token, 0777);
-            chdir(token);
-            token = strtok(NULL, delimiter);
-            count++;
-        }
-
-        //~ Change back to starting directory
-        if (chdir(cwd) != 0){
-            fprintf(stderr, "ash: mkd - Error changing directory");
-        }
-        return 1;
-    }
-}
 int help(char** args)
 {
     int i;
@@ -274,10 +73,6 @@ int help(char** args)
     printf("Use the man command for information on other programs.\n");
     return 1;
 }
-
-/*
-Main Functions
-*/
 
 #define BUFSIZE 1024
 char* read_line(void)
