@@ -34,6 +34,6 @@ extern const char* BG_PINK;
 void print_colored_text(const char* text, const char* color, const char* bg_colour, const char* style);
 void println_colored_text(const char* text, const char* bg_colour, const char* color, const char* style);
 int count_args(char** args);
-int are_number_of_args_correct(char **args, int start, int end, char* command_usage);
+int are_number_of_args_correct(char **args, int wanted_number_of_args, char* command_usage);
 
 #endif

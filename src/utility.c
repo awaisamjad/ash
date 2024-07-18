@@ -42,14 +42,17 @@ int count_args(char** args)
 }
 
 //? change naming as it sounds like a bool
-int are_number_of_args_correct(char **args, int start, int end, char* command_usage) {
+int are_number_of_args_correct(char **args, int wanted_number_of_args, char* command_usage) {
     int num_of_args = count_args(args);
-    if (num_of_args < start) {
-        fprintf(stderr, "Error. Too few arguments");
+    if (num_of_args < wanted_number_of_args) {
+        fprintf(stderr, "Error. Too few arguments\n");
         fprintf(stderr, "%s", command_usage);
+        return 0;
     }
-    else if (num_of_args > end) {
-        fprintf(stderr, "Error. Too few arguments");
+    else if (num_of_args > wanted_number_of_args) {
+        fprintf(stderr, "Error. Too many arguments\n");
         fprintf(stderr, "%s", command_usage);
+        return 0;
     }
+    return 1;
 }

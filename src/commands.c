@@ -104,19 +104,18 @@ int touch(char** args)
     return 1;
 }
 // TODO Needs to take more than just 1 word for the content
+//! Overwrites the current file
 int echo(char** args)
 {
     FILE* file_ptr;
 
     //~ Check if only 3 arguments
     int number_of_arguments = count_args(args);
-    if (number_of_arguments < 3) {
-        fprintf(stderr, "Error. Too few arguments\nUsage: echo "
-                        "\"Content\" filename\n");
-    } else if (number_of_arguments > 3) {
-        fprintf(stderr, "Error. Too many arguments\nUsage: echo "
-                        "\"Content\" filename\n");
-    } else {
+    char* usage = "Usage: echo <Content> filename\n";
+
+    if (are_number_of_args_correct(args, 3, usage)
+        != 0) {
+
         char* content = args[1];
         char* filename = args[2];
         if (content != NULL && filename != NULL) {
