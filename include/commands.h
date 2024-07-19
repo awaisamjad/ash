@@ -2,7 +2,7 @@
 #define COMMANDS_H
 
 int cd(char** args);
-int exit_(char** args);
+int EXIT(char** args);
 int ls(char** args);
 int touch(char** args);
 int echo(char** args);

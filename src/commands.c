@@ -8,8 +8,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "commands.h"
-#include "utility.h"
+#include "../include/commands.h"
+#include "../include/utility.h"
 
 int cd(char** args)
 {
@@ -28,7 +28,7 @@ int cd(char** args)
     return 1;
 }
 
-int exit_(char** args) { return 0; }
+int EXIT(char** args) { return 0; }
 
 int ls(char** args)
 {
@@ -117,31 +117,36 @@ int echo(char** args)
     } else if (number_of_arguments > 3) {
         fprintf(stderr, "Error. Too many arguments\nUsage: echo "
                         "\"Content\" filename\n");
-    } else {
-        char* content = args[1];
-        char* filename = args[2];
-        if (content != NULL && filename != NULL) {
-            file_ptr = fopen(filename, "w");
-            if (file_ptr == NULL) {
-                perror("Error creating file");
-                return 1;
-            }
-            fprintf(file_ptr, "%s", content);
-            fclose(file_ptr);
-        } else {
-            fprintf(stderr, "Error. No content or file name "
-                            "entered\nUsage: echo "
-                            "\"Content\" filename\n");
+    }
+
+    char* content = args[1];
+    char* filename = args[2];
+    if (content != NULL && filename != NULL) {
+        file_ptr = fopen(filename, "w");
+        if (file_ptr == NULL) {
+            perror("Error creating file");
             return 1;
         }
+        fprintf(file_ptr, "%s", content);
+        fclose(file_ptr);
+    } else {
+        fprintf(stderr, "Error. No content or file name "
+                        "entered\nUsage: echo "
+                        "\"Content\" filename\n");
+        return 1;
     }
+    return 1;
 }
+
 int mv(char** args) { }
 int cp(char** args) { }
 int rm(char** args) { }
 int cat(char** args)
 {
     FILE* file_ptr;
+
+    int num_of_args = count_args(args);
+    are_number_of_args_correct(args, 2, "Usage: cat <filename>");
 
     char filename[100], contents; // TODO Is 100 bytes enough?
     scanf("%s", filename);

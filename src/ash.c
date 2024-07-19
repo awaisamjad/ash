@@ -15,7 +15,7 @@
  */
 int cd(char** args);
 int help(char** args);
-int exit_(char** args);
+int EXIT(char** args);
 int ls(char** args);
 int touch(char** args);
 int echo(char** args);
@@ -30,13 +30,13 @@ int cat(char **args);
 /*
   List of builtin commands, followed by their corresponding functions.
  */
-char* builtin_commands[] = { "cd", "help", "exit_", "ls", "touch", "mv",
+char* builtin_commands[] = { "cd", "help", "EXIT", "ls", "touch", "mv",
     "cp", "rm", "cat", "man", "echo", "mkd", };
 
 int (*builtin_functions[])(char**) = {
     cd,
     help,
-    exit_,
+    EXIT,
     ls,
     touch,
     mv,
@@ -198,7 +198,6 @@ void loop()
     do {
         //~ Get the current directory
         if (getcwd(cwd, sizeof(cwd)) != NULL) {
-            // printf("%s", cwd);
             print_colored_text(cwd, GREEN, "", BOLD);
         } else {
             perror("Error getting current working directory");

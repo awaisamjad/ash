@@ -1,4 +1,4 @@
-#include "utility.h"
+#include "../include/utility.h"
 // #define RGB_COLOR(r, g, b) "\033[38;2;" #r ";" #g ";" #b "m" // Text Colour
 // #define BG_RGB_COLOR(r, g, b) "\033[48;2;" #r ";" #g ";" #b "m" // Background Colour
 // #define BOLD "\033[1m"

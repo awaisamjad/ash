@@ -11,6 +11,13 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+typedef enum {
+    SUCESS = 1,
+    FAILURE = 0,
+} Status;
+
+
+
 #define RGB_COLOR(r, g, b) "\033[38;2;" #r ";" #g ";" #b "m" // Text Colour
 #define BG_RGB_COLOR(r, g, b) "\033[48;2;" #r ";" #g ";" #b "m" // Background Colour
 #define BOLD "\033[1m"
