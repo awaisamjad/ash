@@ -13,5 +13,9 @@ int cat(char** args);
 int man(char** args);
 int mkd(char** args);
 int help(char** args);
+int command_history();
+int config_file();
+
+
 
 #endif

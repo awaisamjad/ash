@@ -8,8 +8,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "utility.h"
-#include "commands.h"
+#include "../include/utility.h"
+#include "../include/commands.h"
 /*
   Function Declarations for builtin shell commands:
  */
@@ -215,7 +215,9 @@ void loop()
 
 int main(int argc, char** argv)
 {
-    loop();
+    // loop();
+    // command_history();
+    config_file();
 
     return 0;
 }

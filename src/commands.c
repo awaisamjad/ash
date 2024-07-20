@@ -211,3 +211,65 @@ int mkd(char** args)
         return 1;
     }
 }
+
+int command_history(){
+    // check if file exists. if yes break else create then break
+    const char* home_dir;
+
+    #ifdef _WIN32 
+        home_dir = getenv("USERPROFILE");
+    #else
+        home_dir = getenv("HOME");
+    #endif
+
+    if (home_dir == NULL){
+        fprintf(stderr, "ash: Error finding home directory\n");
+        return 1;
+    }
+
+    char* command_history_filename = "/.ash_command_history";
+    char command_history_file[1024];
+    strcpy(command_history_file, home_dir);
+    strcat(command_history_file, command_history_filename);
+    printf("%s", command_history_file);
+    //~ Open the file. If it doesnt exist create it
+    FILE *command_history_file_ptr = fopen(command_history_file, "r");
+    if (!command_history_file_ptr) {
+        printf("\nCannot find command history file. Creating it ...\n");
+        command_history_file_ptr = fopen(command_history_file, "w");
+        fclose(command_history_file_ptr);
+    }
+
+
+}
+
+int config_file(){
+    // check if file exists. if yes break else create then break
+    const char* home_dir;
+
+    #ifdef _WIN32 
+        home_dir = getenv("USERPROFILE");
+    #else
+        home_dir = getenv("HOME");
+    #endif
+
+    if (home_dir == NULL){
+        fprintf(stderr, "ash: Error finding home directory\n");
+        return 1;
+    }
+
+    char* config_filename = "/.ash_config";
+    char config_file[1024];
+    strcpy(config_file, home_dir);
+    strcat(config_file, config_filename);
+    printf("%s", config_file);
+    //~ Open the file. If it doesnt exist create it
+    FILE *config_file_ptr = fopen(config_file, "r");
+    if (!config_file_ptr) {
+        printf("\nCannot find config file. Creating it ...\n");
+        config_file_ptr = fopen(config_file, "w");
+        fclose(config_file_ptr);
+    }
+
+
+}
