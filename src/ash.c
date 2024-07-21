@@ -10,6 +10,10 @@
 
 #include "../include/utility.h"
 #include "../include/commands.h"
+#include "../include/command_history.h"
+#include "../include/config.h"
+
+
 /*
   Function Declarations for builtin shell commands:
  */
@@ -49,11 +53,6 @@ int (*builtin_functions[])(char**) = {
 };
 
 int number_of_builtin_commands() { return sizeof(builtin_commands) / sizeof(char*); }
-
-/*
-  Builtin function implementations.
-*/
-
 
 /*
 Main Functions
@@ -204,6 +203,8 @@ void loop()
         }
         print_colored_text(" => ", PINK, "", "");
 
+        // main_command_history();
+        
         line = read_line();
         arguments = split_line(line);
         is_finished = execute(arguments);
@@ -213,11 +214,19 @@ void loop()
     } while (is_finished);
 }
 
+/**
+Checks to see if the required files exist. If not they will be created
+*/ 
+int check_for_required_files() {
+    check_for_command_history_file();
+    check_for_config_file();
+}
+
 int main(int argc, char** argv)
 {
-    // loop();
-    // command_history();
-    config_file();
+    // check_for_required_files();
+    loop();
+    // main_command_history();
 
     return 0;
 }
