@@ -47,12 +47,12 @@ int are_number_of_args_correct(char **args, int wanted_number_of_args, char* com
     if (num_of_args < wanted_number_of_args) {
         fprintf(stderr, "Error. Too few arguments\n");
         fprintf(stderr, "%s", command_usage);
-        return 0;
+        return 1;
     }
     else if (num_of_args > wanted_number_of_args) {
         fprintf(stderr, "Error. Too many arguments\n");
         fprintf(stderr, "%s", command_usage);
-        return 0;
+        return 1;
     }
-    return 1;
+    return 0;
 }

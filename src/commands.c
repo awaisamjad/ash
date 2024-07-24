@@ -14,16 +14,26 @@
 int cd(char** args)
 {
     int num_of_args = count_args(args);
-    if (num_of_args < 2) {
-        fprintf(stderr, "ash: Too few arguments\nUsage: cd <directory>\n");
-        return 1;
+    const char* home_dir = getenv("HOME");
+
+    if (home_dir == NULL) {
+        home_dir = getenv("USERPROFILE"); // Fallback for Windows
     }
-    if (args[1] == NULL) {
-        fprintf(stderr, "ash: expected argument to \"cd\"\n");
-    } else {
-        if (chdir(args[1]) != 0) {
+
+    if (num_of_args == 1) {
+        //? go to home dir
+        if (chdir(home_dir) != 0) {
+            fprintf(stderr, "ash: Error going to home directory\n");
             perror("ash");
         }
+    } else if (num_of_args == 2) {
+        if (chdir(args[1]) != 0) {
+            fprintf(stderr, "ash: Error going to directory\n");
+            perror("ash");
+        }
+    } else {
+        fprintf(stderr, "ash: Too many arguments\nUsage: cd <directory>\n");
+        return 1;
     }
     return 1;
 }
@@ -57,10 +67,14 @@ int ls(char** args)
 
                 // Check if it's a directory or a file
                 char type = S_ISDIR(statbuf.st_mode) ? 'D' : 'F';
-                if (type == 'D') {
+                char* text = dir->d_name;
+
+                // Checks if it is a directory and if the dir/file isnt hidden.
+                // TODO use the '-a' flag to override the hiding of the files
+                if (type == 'D' && text[0] != '.') {
                     // TODO design colour scheme
                     println_colored_text(dir->d_name, BG_PINK, "", BOLD);
-                } else {
+                } else if (type == 'F' && text[0] != '.') {
                     println_colored_text(dir->d_name, BG_RED, "", "");
                 }
             }
@@ -211,5 +225,29 @@ int mkd(char** args)
 }
 
 int mv(char** args) { }
-int cp(char** args) { }
+// TODO Make sure if the copy is made in the same dir that it has a new name
+int cp(char** args)
+{
+    int num_of_args = count_args(args);
+
+    if (num_of_args < 3) {
+        fprintf(stderr, "ash: Too few arguments\nUsage: cp <filename> <directory>");
+        return 1;
+    } else if (num_of_args > 3) {
+        fprintf(stderr, "ash: Too many arguments\nUsage: cp <filename> <directory>");
+        return 1;
+    }
+
+    char* filename = args[1];
+    char* directory = args[2];
+    //~ buffer to store contents of file
+    char buffer[4096];
+
+    FILE* file_ptr;
+    file_ptr = fopen(filename, "r");
+    fgets(buffer, 4096, file_ptr);
+
+    cd(&directory);
+    fopen("filename.txt", "w");
+}
 int rm(char** args) { }

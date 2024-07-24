@@ -12,7 +12,13 @@
 #include "../include/commands.h"
 #include "../include/command_history.h"
 #include "../include/config.h"
+#include "../include/flags.h"
 
+COMMAND list_of_commands[] = {
+        { "cd", { NULL } }, // If no flags, explicitly set the first element to NULL
+        { "ls", { "-a", "-v", NULL } }, // Ensure subsequent slots are NULL to indicate end of valid flags
+        { "rm", { "-rf", NULL } } // Same as above
+    };
 
 /*
   Function Declarations for builtin shell commands:
@@ -107,11 +113,11 @@ char* read_line(void)
     }
 }
 
-#define LSH_TOK_BUFSIZE 64
-#define LSH_TOK_DELIM " \t\r\n\a"
+#define TOKEN_BUFSIZE 64
+#define TOKEN_DELIM " \t\r\n\a"
 char** split_line(char* line)
 {
-    int bufsize = LSH_TOK_BUFSIZE, position = 0;
+    int bufsize = TOKEN_BUFSIZE, position = 0;
     char** tokens = malloc(bufsize * sizeof(char*));
     char* token;
 
@@ -120,13 +126,13 @@ char** split_line(char* line)
         exit(0);
     }
 
-    token = strtok(line, LSH_TOK_DELIM);
+    token = strtok(line, TOKEN_DELIM);
     while (token != NULL) {
         tokens[position] = token;
         position++;
 
         if (position >= bufsize) {
-            bufsize += LSH_TOK_BUFSIZE;
+            bufsize += TOKEN_BUFSIZE;
             tokens = realloc(tokens, bufsize * sizeof(char*));
             if (!tokens) {
                 fprintf(stderr, "ALLOCATION ERROR\n");
@@ -134,7 +140,7 @@ char** split_line(char* line)
             }
         }
 
-        token = strtok(NULL, LSH_TOK_DELIM);
+        token = strtok(NULL, TOKEN_DELIM);
     }
     tokens[position] = NULL;
     return tokens;
@@ -176,6 +182,7 @@ int execute(char** args)
         if (strcmp(args[0], builtin_commands[i]) == 0) {
             // Found a match, execute the corresponding
             // function.
+            display_flags_from_command_name(list_of_commands, args[0], 3);
             return (*builtin_functions[i])(args);
         }
     }
@@ -214,12 +221,13 @@ void loop()
     } while (is_finished);
 }
 
-/**
+/***
 Checks to see if the required files exist. If not they will be created
 */ 
 int check_for_required_files() {
     check_for_command_history_file();
     check_for_config_file();
+    return 0;
 }
 
 int main(int argc, char** argv)
