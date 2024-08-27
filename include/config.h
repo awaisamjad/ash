@@ -5,6 +5,6 @@
 #include <stdio.h>
 #include <string.h>
 
-int check_for_config_file();
+char* check_for_config_file();
 
 #endif

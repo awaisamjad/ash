@@ -232,7 +232,7 @@ int check_for_required_files() {
 
 int main(int argc, char** argv)
 {
-    // check_for_required_files();
+    check_for_required_files();
     loop();
     // main_command_history();
 
