@@ -42,5 +42,5 @@ void print_colored_text(const char* text, const char* color, const char* bg_colo
 void println_colored_text(const char* text, const char* bg_colour, const char* color, const char* style);
 int count_args(char** args);
 int are_number_of_args_correct(char **args, int wanted_number_of_args, char* command_usage);
-
+char* get_home_dir();
 #endif
