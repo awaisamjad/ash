@@ -1,0 +1,15 @@
+# ash config file
+# In this file, we define the default KEYS you can use to customise ash
+# All the comments are single lines cuz i cba to inlcude multi-line in the parser :)
+# I will include descriptions and explanations of the KEYS above their definition
+
+# Change the Arrow colour
+# 	 Following accepted (case does matter): [Red, Orange, Yellow, Brown, Green, Blue, Purple, Pink, Black, White] 
+# 	 To be implemented:
+# 		 RGBA(R,G,B,A)
+# 		 Redefining constants i.e. Red = RGBA(255,0,0,255)
+ArrowColour = "Pink"
+
+FilePath = "Short"
+
+ColourPalette = ["Red", "Yellow", "Purple"]
