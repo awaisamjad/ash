@@ -20,6 +20,7 @@ COMMAND list_of_commands[] = {
     {"cd", {{NULL, NULL}}}, 
     {"ls", {{"-a", "--all"}, {"-l", "--long"}, {NULL, NULL}}},
     {"rm", {{"-rf", NULL}, {NULL, NULL}}},
+    {NULL, {{NULL, NULL}}}
 };
 
 /*
