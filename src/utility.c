@@ -55,7 +55,7 @@ int are_number_of_args_correct(char **args, int wanted_number_of_args,
   return 0;
 }
 
-char* get_home_dir() {
+char *get_home_dir() {
   const char *home_dir;
 #ifdef _WIN32
   home_dir = getenv("USERPROFILE");
@@ -66,5 +66,5 @@ char* get_home_dir() {
     fprintf(stderr, "ash: Error finding home directory\n");
     return NULL;
   }
-    return home_dir;
+  return home_dir;
 }

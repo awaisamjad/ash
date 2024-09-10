@@ -14,12 +14,12 @@
 #include "../include/flags.h"
 #include "../include/utility.h"
 
+
+// Command Table
 COMMAND list_of_commands[] = {
-    {"cd", {NULL}}, // If no flags, explicitly set the first element to NULL
-    {"ls",
-     {"-a", "-v",
-      NULL}}, // Ensure subsequent slots are NULL to indicate end of valid flags
-    {"rm", {"-rf", NULL}} // Same as above
+    {"cd", {{NULL, NULL}}}, 
+    {"ls", {{"-a", "--all"}, {"-l", "--long"}, {NULL, NULL}}},
+    {"rm", {{"-rf", NULL}, {NULL, NULL}}},
 };
 
 /*
@@ -172,6 +172,7 @@ int execute(char **args) {
     if (strcmp(args[0], builtin_commands[i]) == 0) {
       // Found a match, execute the corresponding
       // function.
+      //TODO Number of commands param should be dynamically calculated
       display_flags_from_command_name(list_of_commands, args[0], 3);
       return (*builtin_functions[i])(args);
     }
@@ -213,16 +214,17 @@ void loop() {
 /***
 Checks to see if the required files exist. If not they will be created
 */
-int check_for_required_files() {
-  check_for_command_history_file();
-  check_for_config_file();
-  return 0;
+void check_for_required_files() {
+  (void)check_for_command_history_file();
+  (void)check_for_config_file();
 }
 
 int main(int argc, char **argv) {
-  check_for_required_files();
+  // (void)check_for_required_files();
+  // char** config_file = read_file_contents(get_config_file_path());
+  // print_file(config_file);
+  // free_file(config_file);
   loop();
   // main_command_history();
-
   return 0;
 }
