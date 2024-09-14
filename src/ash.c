@@ -20,7 +20,7 @@ COMMAND list_of_commands[] = {
     {"cd", {{NULL, NULL}}}, 
     {"ls", {{"-a", "--all"}, {"-l", "--long"}, {NULL, NULL}}},
     {"rm", {{"-rf", NULL}, {NULL, NULL}}},
-    {NULL, {{NULL, NULL}}}
+    {NULL, {{NULL, NULL}}} //? Represents the end of the list
 };
 
 /*
@@ -174,7 +174,7 @@ int execute(char **args) {
       // Found a match, execute the corresponding
       // function.
       //TODO Number of commands param should be dynamically calculated
-      display_flags_from_command_name(list_of_commands, args[0], 3);
+      display_flags_from_command_name(list_of_commands, args[0]);
       return (*builtin_functions[i])(args);
     }
   }
@@ -225,7 +225,9 @@ int main(int argc, char **argv) {
   // char** config_file = read_file_contents(get_config_file_path());
   // print_file(config_file);
   // free_file(config_file);
+  
   loop();
+  
   // main_command_history();
   return 0;
 }

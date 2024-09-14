@@ -14,6 +14,6 @@ typedef struct {
 } COMMAND;
 
 void command_iter(COMMAND commands[], int num_commands);
-void display_flags_from_command_name(COMMAND commands[], char* name, int num_of_commands);
+void display_flags_from_command_name(COMMAND commands[], char* name) ;
 
 #endif
