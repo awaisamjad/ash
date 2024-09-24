@@ -159,16 +159,16 @@ int cat(char **args) {
   int num_of_args = count_args(args);
   if (num_of_args < 2) {
     fprintf(stderr, "Error. Too few arguments\nUsage: cat filename...\n");
+    return 1;
   }
 
   char contents;
   for (int i = 1; i < num_of_args; i++) {
     char *filename = args[i];
-    // Open file
     file_ptr = fopen(filename, "r");
     if (file_ptr == NULL) {
       printf("Cannot open file \n");
-      exit(0);
+      return 1;
     }
     contents = fgetc(file_ptr);
     while (contents != EOF) {
