@@ -38,7 +38,7 @@ int rm(char **args);
 int cat(char **args);
 int man(char **args);
 int mkd(char **args);
-int cat(char **args);
+int test(char **args);
 
 /*
   List of builtin commands, followed by their corresponding functions.
@@ -46,10 +46,11 @@ int cat(char **args);
 char *builtin_commands[] = {
     "cd", "help", "EXIT", "ls",  "touch", "mv",
     "cp", "rm",   "cat",  "man", "echo",  "mkd",
+    "test"
 };
 
 int (*builtin_functions[])(char **) = {
-    cd, help, EXIT, ls, touch, mv, cp, rm, cat, man, echo, mkd,
+    cd, help, EXIT, ls, touch, mv, cp, rm, cat, man, echo, mkd, test, 
 };
 
 int number_of_builtin_commands() {

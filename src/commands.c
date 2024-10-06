@@ -19,20 +19,59 @@ int cd(char **args) {
     home_dir = getenv("USERPROFILE"); // Fallback for Windows
   }
 
+  //? go to home dir
   if (num_of_args == 1) {
-    //? go to home dir
     if (chdir(home_dir) != 0) {
       fprintf(stderr, "ash: Error going to home directory\n");
       perror("ash");
     }
-  } else if (num_of_args == 2) {
+  }
+  //? if there is only one argument after `cd` then just change to that directory
+  else if (num_of_args == 2) {
     if (chdir(args[1]) != 0) {
+      printf("arg: %s\n", args[1]);
       fprintf(stderr, "ash: Error going to directory\n");
       perror("ash");
     }
-  } else {
-    fprintf(stderr, "ash: Too many arguments\nUsage: cd <directory>\n");
-    return 1;
+  } 
+  else {
+    //? the directory may be multi word
+    char* dir = "";
+    int count = 1;
+    //! in this code the dir argument can start with a " and end with a ' which shouldnt be allowed
+    //! the check should ensure that if it starts with a " it ends with it and same for '
+    //! this can be done with 2 separate if statements for " and ' respectively
+    //TODO check is switch case is better
+    if (args[1][0] == '"')
+    {
+      printf("dsa");
+      while (args[1][count] != '"')
+      {
+        printf("char : %c", args[1][count]);
+        count++;
+      }
+    }
+    // else if (args[1][0] == '\'' )
+    // {
+    //   while (args[1][count] != '\'')
+    //   {
+    //     //! code doesnt work
+    //     // dir = append(dir, args[1][count]);
+    //     printf("char : %c", args[1][count]);
+    //     count++;
+    //   }
+      
+    // }
+    else {
+      fprintf(stderr, "ash: Too many arguments\nUsage: cd <directory>\n");
+      return 1;
+    }
+
+    if (chdir(dir) != 0) {
+      printf("arg: %s\n", dir);
+      fprintf(stderr, "ash: Error going to directory\n");
+      perror("ash");
+    }
   }
   return 1;
 }
@@ -158,7 +197,7 @@ int cat(char **args) {
 
   int num_of_args = count_args(args);
   if (num_of_args < 2) {
-    fprintf(stderr, "Error. Too few arguments\nUsage: cat filename...\n");
+    fprintf(stderr, "Error. Too few arguments\nUsage: cat <filename>...\n");
     return 1;
   }
 
@@ -172,7 +211,7 @@ int cat(char **args) {
     }
     contents = fgetc(file_ptr);
     while (contents != EOF) {
-        //TODO Print file name above text. Shpould be done with the verbose flag
+        //TODO Print file name above text. Should be done with the verbose flag
         // printf("%s\n", args[i]);
         printf("%c", contents);
         contents = fgetc(file_ptr);
@@ -258,3 +297,42 @@ int cp(char **args) {
   fopen("filename.txt", "w");
 }
 int rm(char **args) {}
+
+int test(char** args) {
+  printf("%c\n", args[1][0]);
+    char* dir = "";
+    int count = 1;
+    if (args[1][0] == '"')
+    {
+      while (args[1][count] != '"')
+      {
+        //? Empty space not registering
+        if (args[1][count] == "")
+        {
+          dir = append(dir, '#');
+        }
+        
+        dir = append(dir, args[1][count]);
+        count++;
+      }
+      //? second quotation mark doesnt get added in loop
+      dir = append(dir, '"');
+    }
+    else {
+      fprintf(stderr, "enter something\n");
+      return 1;
+    }
+    printf("%s", dir);
+    // return BREAK;
+    return 1;
+}
+
+// enum RETURN {
+//   BREAK,
+//   CONTINUE,
+// };
+
+// enum FD {
+//   BREAK,
+//   CON,
+// };

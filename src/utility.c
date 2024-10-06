@@ -55,6 +55,15 @@ int are_number_of_args_correct(char **args, int wanted_number_of_args,
   return 0;
 }
 
+char* append(char* string, char c) {
+  size_t size = strlen(string);
+  char* string_size = malloc(size + 2); //? idk why the +2
+  strcpy(string_size, string);
+  string_size[size] = c;
+  string_size[size + 1] = '\0';
+  return string_size;
+}
+
 char *get_home_dir() {
   const char *home_dir;
 #ifdef _WIN32
