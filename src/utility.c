@@ -1,4 +1,5 @@
 #include "../include/utility.h"
+#include "../include/global.h"
 // #define RGB_COLOR(r, g, b) "\033[38;2;" #r ";" #g ";" #b "m" // Text Colour
 // #define BG_RGB_COLOR(r, g, b) "\033[48;2;" #r ";" #g ";" #b "m" // Background
 // Colour #define BOLD "\033[1m" #define UNDERLINE "\033[4m" #define RESET
@@ -46,11 +47,11 @@ int are_number_of_args_correct(char **args, int wanted_number_of_args,
   if (num_of_args < wanted_number_of_args) {
     fprintf(stderr, "Error. Too few arguments\n");
     fprintf(stderr, "%s", command_usage);
-    return 1;
+    return CONTINUE;
   } else if (num_of_args > wanted_number_of_args) {
     fprintf(stderr, "Error. Too many arguments\n");
     fprintf(stderr, "%s", command_usage);
-    return 1;
+    return CONTINUE;
   }
   return 0;
 }

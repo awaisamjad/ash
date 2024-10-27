@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <utility.h>
+#include "../include/global.h"
 #define SEPARATOR '='
 #define MAX_LINES 1024       // Probably a lot
 #define MAX_LINE_LENGTH 1024 // Probably too much

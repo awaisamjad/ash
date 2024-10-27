@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
+#include "../include/global.h"
 
 // void command_iter(COMMAND commands[], int num_commands)
 // {

@@ -10,6 +10,8 @@
 
 #include "../include/commands.h"
 #include "../include/utility.h"
+#include "../include/global.h"
+
 
 int cd(char **args) {
   int num_of_args = count_args(args);
@@ -64,7 +66,7 @@ int cd(char **args) {
     // }
     else {
       fprintf(stderr, "ash: Too many arguments\nUsage: cd <directory>\n");
-      return 1;
+      return CONTINUE;
     }
 
     if (chdir(dir) != 0) {
@@ -73,10 +75,10 @@ int cd(char **args) {
       perror("ash");
     }
   }
-  return 1;
+  return CONTINUE;
 }
 
-int EXIT(char **args) { return 0; }
+int EXIT(char **args) { return BREAK; }
 
 int ls(char **args) {
   DIR *d;
@@ -120,7 +122,7 @@ int ls(char **args) {
   } else {
     fprintf(stderr, "Error listing directory contents\n");
   }
-  return 1;
+  return CONTINUE;
 }
 
 // TODO Add way to give path to the file: touch dir1/dir2/test.txt
@@ -137,23 +139,23 @@ int touch(char **args) {
         printf("File '%s' already exists, "
                "cannot create a new one.\n",
                args[i]);
-        return 1;
+        return CONTINUE;
       } else {
         file_ptr = fopen(args[i], "w");
       }
       if (file_ptr == NULL) {
         perror("Error creating file");
-        return 1;
+        return CONTINUE;
       }
       fclose(file_ptr);
     }
   } else {
     fprintf(stderr, "Error. No file name entered\nUsage: touch "
                     "<filename>\n");
-    return 1;
+    return CONTINUE;
   }
 
-  return 1;
+  return CONTINUE;
 }
 
 // TODO Needs to take more than just 1 word for the content
@@ -177,7 +179,7 @@ int echo(char **args) {
     file_ptr = fopen(filename, "w");
     if (file_ptr == NULL) {
       perror("Error creating file");
-      return 1;
+      return CONTINUE;
     }
     fprintf(file_ptr, "%s", content);
     fclose(file_ptr);
@@ -185,9 +187,9 @@ int echo(char **args) {
     fprintf(stderr, "Error. No content or file name "
                     "entered\nUsage: echo "
                     "\"Content\" filename\n");
-    return 1;
+    return CONTINUE;
   }
-  return 1;
+  return CONTINUE;
 }
 
 //! Doesnt work when filename is entered
@@ -198,7 +200,7 @@ int cat(char **args) {
   int num_of_args = count_args(args);
   if (num_of_args < 2) {
     fprintf(stderr, "Error. Too few arguments\nUsage: cat <filename>...\n");
-    return 1;
+    return CONTINUE;
   }
 
   char contents;
@@ -207,7 +209,7 @@ int cat(char **args) {
     file_ptr = fopen(filename, "r");
     if (file_ptr == NULL) {
       printf("Cannot open file \n");
-      return 1;
+      return CONTINUE;
     }
     contents = fgetc(file_ptr);
     while (contents != EOF) {
@@ -220,7 +222,7 @@ int cat(char **args) {
   }
 
   fclose(file_ptr);
-  return 1;
+  return CONTINUE;
 }
 int man(char **args) {}
 // TODO Make better
@@ -229,10 +231,10 @@ int mkd(char **args) {
 
   if (num_of_args < 2) {
     fprintf(stderr, "Too few arguments\nUsage: mkd <path>\n");
-    return 1;
+    return CONTINUE;
   } else if (num_of_args > 2) {
     fprintf(stderr, "Too many arguments\nUsage: mkd <path>\n");
-    return 1;
+    return CONTINUE;
   }
 
   char *filepath = args[1];
@@ -245,7 +247,7 @@ int mkd(char **args) {
                                        // path string just make the directory
     mkdir(filepath, 0777); // TODO Look more into the mode. 0777 sets full
                            // read/write/execute permissions for all users.
-    return 1;
+    return CONTINUE;
   } else {
     token = strtok(filepath, delimiter);
 
@@ -266,7 +268,7 @@ int mkd(char **args) {
     if (chdir(cwd) != 0) {
       fprintf(stderr, "ash: mkd - Error changing directory");
     }
-    return 1;
+    return CONTINUE;
   }
 }
 
@@ -277,11 +279,11 @@ int cp(char **args) {
 
   if (num_of_args < 3) {
     fprintf(stderr, "ash: Too few arguments\nUsage: cp <filename> <directory>");
-    return 1;
+    return CONTINUE;
   } else if (num_of_args > 3) {
     fprintf(stderr,
             "ash: Too many arguments\nUsage: cp <filename> <directory>");
-    return 1;
+    return CONTINUE;
   }
 
   char *filename = args[1];
@@ -320,11 +322,11 @@ int test(char** args) {
     }
     else {
       fprintf(stderr, "enter something\n");
-      return 1;
+      return CONTINUE;
     }
     printf("%s", dir);
     // return BREAK;
-    return 1;
+    return CONTINUE;
 }
 
 // enum RETURN {

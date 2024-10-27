@@ -1,5 +1,6 @@
 #include "../include/command_history.h" 
 #include <stdio.h>
+#include "../include/global.h"
 
 int check_for_command_history_file(){
     // check if file exists. if yes break else create then break
@@ -13,7 +14,7 @@ int check_for_command_history_file(){
 
     if (home_dir == NULL){
         fprintf(stderr, "ash: Error finding home directory\n");
-        return 1;
+        return CONTINUE;
     }
 
     char* command_history_filename = "/.ash_command_history";
@@ -30,7 +31,7 @@ int check_for_command_history_file(){
         fclose(command_history_file_ptr);
     }
 
-    return 1;
+    return CONTINUE;
 
 }
 
@@ -54,7 +55,7 @@ int is_up_arrow_pressed() {
         if (ch == 91) { // '[' character
             ch = get_char();
             if (ch == 65) { // 'A' character for up arrow key
-                return 1;
+                return CONTINUE;
             }
         }
     }
@@ -68,7 +69,7 @@ int is_down_arrow_pressed() {
         if (ch == 91) { // '[' character
             ch = get_char();
             if (ch == 66) { // 'A' character for up arrow key
-                return 1;
+                return CONTINUE;
             }
         }
     }

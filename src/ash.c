@@ -13,6 +13,7 @@
 #include "../include/config.h"
 #include "../include/flags.h"
 #include "../include/utility.h"
+#include "../include/global.h"
 
 
 // Command Table
@@ -72,7 +73,7 @@ int help(char **args) {
   }
 
   printf("Use the man command for information on other programs.\n");
-  return 1;
+  return CONTINUE;
 }
 
 #define BUFSIZE 1024
@@ -161,13 +162,13 @@ int launch(char **args) {
     } while (!WIFEXITED(status) && !WIFSIGNALED(status));
   }
 
-  return 1;
+  return CONTINUE;
 }
 
 int execute(char **args) {
   if (args[0] == NULL) {
     // No command entered.
-    return 1;
+    return CONTINUE;
   }
 
   for (int i = 0; i < number_of_builtin_commands(); i++) {
@@ -182,7 +183,7 @@ int execute(char **args) {
 
   // If we reach here, no built-in command matched.
   print_colored_text("ash: Command Not Found\n", RED, "", BOLD);
-  return 1; // You might want to call launch(args) here if you have
+  return CONTINUE; // You might want to call launch(args) here if you have
             // external command execution implemented.
 }
 
